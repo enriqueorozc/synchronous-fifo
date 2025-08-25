@@ -20,7 +20,7 @@ module sync_fifo #(parameter
 );
 
   // Circular Buffer:
-  logic [DATA_DEPTH-1:0] [DATA_WIDTH-1:0] buffer;
+  logic [DATA_WIDTH-1:0] buffer [DATA_DEPTH];
 
   // Internal Pointers:
   logic [$clog2(DATA_DEPTH)-1:0] writePtr;
@@ -47,7 +47,7 @@ module sync_fifo #(parameter
     end else begin
 
       if (read_en && !empty) begin
-        dout <= din[readPtr];
+        dout <= buffer[readPtr];
         readPtr <= readPtr + 1;
       end
 
