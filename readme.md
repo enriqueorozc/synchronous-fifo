@@ -7,3 +7,16 @@ queue. In this design, the FIFO's read and write operations are synchronized to 
 This FIFO is parameterized by:
  - **DATA_DEPTH**: The maximum number of entries the buffer can store
  - **DATA_WIDTH**: The bit-width of each entry
+
+There are additional controls inputs, such as the 'write_en' (write enable) and the 'read_en' (read enable). These control
+inputs allow users to manage the data flow of the FIFO. 
+
+## Output Behavior:
+This FIFO implementation has three outputs, defined as:
+- **dout**: The data at the front of the queue
+- **full**: A flag that indicates if the queue has reached it's maximum number of entries
+- **empty**: A flag that indicates if the queue has no entries
+
+The intended behavior of this FIFO is to allow the user fill it with data until it reaches it's maximum number of entries, and
+when the FIFO is full, it won't store any more data until a read or reset has occured. By reading from the FIFO you're removing
+that data from the queue.
