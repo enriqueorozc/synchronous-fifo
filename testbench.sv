@@ -84,6 +84,35 @@ module testbench();
       assert(dout == rand_pkt[i]);
       @(posedge clk);
 	  end
+
+    // ---------- Test 3: Consecutive Reads Past Empty ---------- //
+    $display("Test 3: Consecutive Reads Past Empty");
+
+    @(posedge clk);
+    assert(!full && empty);
+    
+   	// ---------- Test 4: Reading & Writing ---------- //
+    $display("Test 4: Reading & Writing");
+    
+    // Randomize Data Packet:
+    for (int i = 0; i < DATA_DEPTH; i++) begin
+    	rand_pkt[i] = $random;
+    end
+    
+    din = rand_pkt[0];
+    write_en = 1;
+    
+    @(posedge clk);
+    din = rand_pkt[1]; 
+    @(posedge clk);
+    
+    assert(dout == rand_pkt[0] && !empty && !full);
+    
+    write_en = 0;
+    read_en = 1;
+    @(posedge clk);
+    
+    assert(dout == rand_pkt[1] && empty);
     
     $finish;
   end

@@ -20,3 +20,11 @@ This FIFO implementation has three outputs, defined as:
 The intended behavior of this FIFO is to allow the user fill it with data until it reaches it's maximum number of entries, and
 when the FIFO is full, it won't store any more data until a read or reset has occured. By reading from the FIFO you're removing
 that data from the queue.
+
+## Testing Methodology:
+The approach I took to test this synchronous FIFO was a directed verification approach with assertion-based vertification to target
+general and specific edge-cases that would be encountered under normal operation. The key scenario I targeted were:
+
+--**Empty / Full State**: Ensure that the FIFO's full and empty flags work properly and that these two flags can never both be high
+--**Filling & Unfilling the FIFO**: Ensure that the FIFO's, first-in and first-out property was properly implemented by inputting 
+randomized and getting that data in the order it was pushed
