@@ -23,8 +23,9 @@ module sync_fifo #(parameter
   logic [DATA_WIDTH-1:0] buffer [DATA_DEPTH];
 
   // Internal Pointers:
-  logic [$clog2(DATA_DEPTH)-1:0] writePtr;
-  logic [$clog2(DATA_DEPTH)-1:0] readPtr;
+  parameter DEPTH_LOG = $clog2(DATA_DEPTH);
+  logic [DEPTH_LOG:0] writePtr;
+  logic [DEPTH_LOG:0] readPtr;
 
   // Writing Handling:
   always_ff @(posedge clk) begin
@@ -33,7 +34,7 @@ module sync_fifo #(parameter
     end else begin
 
       if (write_en && !full) begin
-        buffer[writePtr] <= din;
+       	buffer[writePtr[DEPTH_LOG-1:0]] <= din;
         writePtr <= writePtr + 1;
       end
 
@@ -47,14 +48,14 @@ module sync_fifo #(parameter
     end else begin
 
       if (read_en && !empty) begin
-        dout <= buffer[readPtr];
+        dout <= buffer[readPtr[DEPTH_LOG-1:0]];
         readPtr <= readPtr + 1;
       end
 
     end
   end 
 
-  assign full = (writePtr + 1 == readPtr);
-  assign empty = (writePtr == readPtr);
+  assign full = (readPtr == {~writePtr[DEPTH_LOG], writePtr[DEPTH_LOG-1:0]});
+  assign empty = (readPtr == writePtr);
 
 endmodule

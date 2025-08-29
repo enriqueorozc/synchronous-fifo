@@ -17,11 +17,9 @@ module testbench();
   logic [DATA_WIDTH-1:0] dout;
   logic empty;
   logic full;
-
+  
   // Random Data Packet:
   logic [DATA_WIDTH-1:0] rand_pkt [DATA_DEPTH];
-
-  always #(10ns) clk = ~clk;
 
   sync_fifo #( .DATA_DEPTH(DATA_DEPTH), .DATA_WIDTH(DATA_WIDTH) ) dut (
     .clk(clk),
@@ -33,6 +31,8 @@ module testbench();
     .empty(empty),
     .full(full)
   );
+  
+  always #5 clk = ~clk;
 
   initial begin
 
@@ -40,34 +40,51 @@ module testbench();
     clk = 0;
     write_en = 0;
     read_en = 0;
+    reset = 1;
+    
+    $monitor("din = %h, wr_en = %b, rd_en = %b, reset = %b, dout = %h, full = %b, empty = %b",
+      din, write_en, read_en, reset, dout, full, empty);
 
     // ---------- Test 1: Empty FIFO State ---------- //
+    $display("Test 1: Empty FIFO State");
 
-    // Reset FIFO:
-    reset = 1;
-    @(posedge clk);
+    // Turn off Reset:
+    @(negedge clk);
     reset = 0;
+    @(posedge clk);
 
     assert(empty && !full);
 
-    // // Randomizing Data Packet:
-    // for (int i = 0; i < DATA_DEPTH; i++) begin
-    //   rand_pkt[i] = $random;
-    // end
-
-    // // ---------- Test 2 ---------- //
-    // $display("Test 2: Filling FIFO");
-
-    // @(posedge clk);
-    // write_en = 1;
-
-    // for (int i = 0; i < DATA_DEPTH; i++) begin
-    //   din = rand_pkt[i];
-    //   @(poedge clk);
-    // end
-
-    // write_en = 0;
-
+    // ---------- Test 2: Filling and Unloading the FIFO ---------- //
+    $display("Test 2: Filling and Unloading the FIFO");
+    
+    // Randomizing Data Packet:
+    for (int i = 0; i < DATA_DEPTH; i++) begin
+    	rand_pkt[i] = $random;
+    end
+    
+    // Prepare to Write:
+    @(posedge clk);
+    write_en = 1;
+    
+    for (int i = 0; i < DATA_DEPTH; i++) begin
+      din = rand_pkt[i];
+      @(posedge clk);
+    end
+    
+    // Turn off Write Enable:
+    write_en = 0;
+    @(posedge clk);
+    
+    // Prepare to Read:
+    read_en = 1;
+    @(posedge clk);
+    
+    for (int i = 0; i < DATA_DEPTH; i++) begin
+      assert(dout == rand_pkt[i]);
+      @(posedge clk);
+	end
+    
     $finish;
   end
 endmodule
