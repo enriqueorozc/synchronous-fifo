@@ -83,7 +83,7 @@ module testbench();
     for (int i = 0; i < DATA_DEPTH; i++) begin
       assert(dout == rand_pkt[i]);
       @(posedge clk);
-	end
+	  end
     
     $finish;
   end
