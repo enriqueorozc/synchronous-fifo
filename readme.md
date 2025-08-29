@@ -25,6 +25,6 @@ that data from the queue.
 The approach I took to test this synchronous FIFO was a directed verification approach with assertion-based vertification to target
 general and specific edge-cases that would be encountered under normal operation. The key scenario I targeted were:
 
---**Empty / Full State**: Ensure that the FIFO's full and empty flags work properly and that these two flags can never both be high
---**Filling & Unfilling the FIFO**: Ensure that the FIFO's, first-in and first-out property was properly implemented by inputting 
+- **Empty / Full State**: Ensure that the FIFO's full and empty flags work properly and that these two flags can never both be high
+- **Filling & Unfilling the FIFO**: Ensure that the FIFO's, first-in and first-out property was properly implemented by inputting 
 randomized and getting that data in the order it was pushed
